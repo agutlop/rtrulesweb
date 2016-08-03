@@ -1,0 +1,100 @@
+<div ng-controller="TopicsCtrl as ctrl">
+  <div class="header" >
+    <h1>Topics</h1>
+  </div>
+  <div class="container">
+    <form>
+      <div class="form-group">
+        <label for="topic">Topic Name</label>
+        <input type="text" class="form-control" ng-model="ctrl.newTopic.topic" id="topic" placeholder="Topic Name">
+      </div>
+      <div class="form-group">
+        <label for="desc">Description</label>
+        <input type="text" class="form-control" ng-model="ctrl.newTopic.desc" id="desc" placeholder="Topic Description">
+      </div>
+      <div class="panel panel-group" id="stages-panel-group">
+        <div ng-repeat="stage in ctrl.newTopic.stages" class="panel panel-body" id="stage-panel-body">
+          <div class="form-group">
+            <label for="stg">Stage Name</label>
+            <input type="text" class="form-control" ng-model="stage.stage" id="stg" placeholder="Stage Name">
+          </div>
+          <div class="form-group">
+            <label for="stgdsc">Description</label>
+            <input type="text" class="form-control" ng-model="stage.desc" id="stgdsc" placeholder="Stage Description">
+          </div>
+          <div class="col-xs-4">
+            <label for="name">Name</label>
+          </div>
+          <div class="col-xs-4">
+            <label for="typ">Field Type</label>
+          </div>
+          <div class="col-xs-4">
+            <label for="but-field">Quita/añadir</label>
+          </div>
+          <div ng-repeat="field in stage.fields" class="panel-primary row">
+            <div class="form-group col-md-4">
+              <input type="text" ng-model="field.name" class="form-control" id="name" placeholder="Field Name">
+            </div>
+            <div class="form-group col-md-4">
+              <select type="text" ng-model="field.typ" class="form-control" id="typ" placeholder="Field Type" ng-value="">
+                <option ng-repeat="fieldtype in ctrl.fieldTypes" ng-value="fieldtype">{{fieldtype}}</option>
+                </select>
+            </div>
+            <div class="form-group col-md-4" id="but-field">
+              <button class="btn btn-default" ng-show="$last && !$first" ng-click="ctrl.removeField($parent.$index)"><span class="glyphicon glyphicon-minus"></span></button>
+              <button class="btn btn-default" ng-show="$last" ng-click="ctrl.addField($parent.$index)"><span class="glyphicon glyphicon-plus"></span></button>
+            </div>
+          </div>
+          <div class="form-group col-md-4" id="but-stage">
+            <button class="btn btn-default" ng-show="!$first" ng-click="ctrl.removeStage($index)"><span class="glyphicon glyphicon-minus"></span></button>
+            <button class="btn btn-default" ng-show="$last" ng-click="ctrl.addStage()"><span class="glyphicon glyphicon-plus"> Add Stage</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-1">
+        <button type="submit" class="btn btn-default" ng-click="ctrl.saveFieldType($document)">Guardar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="container voffset15">
+    <div id = "alert_placeholder"></div>
+  </div>
+
+  <label for="existing-topics"> Existing Topics</label>
+  <!-- LISTADO DE DATOS EN BD -->
+  <div class="container voffset15" id="existing-topics">
+    <div class="panel-group" id="accordion">
+      <div class="panel panel-default" ng-repeat="topic in ctrl.dbTopics" id="{{'Topic_'+$index}}">
+        <div class="panel-heading">
+          <h4 class="panel-title" ng-model="topic.topic">
+            <a data-toggle="collapse" class="collapsed" data-target="#collapse{{'Topic_'+$index}}"></a>
+            <h4>{{topic.topic}} <small> - {{ topic.desc }}</small></h4>
+          </h4>
+        </div>
+        <div id="collapse{{'Topic_'+$index}}" class="panel-collapse collapse">
+          <div class="panel-body" >
+            <div class="panel panel-default" ng-repeat="stage in topic.stages">
+              <div class="panel-heading">
+                <div class="panel-title" ng-model="stage.stage">
+                  <a data-toggle="collapse" class="collapsed" data-target="#collapse{{'Stage_'+$parent.$index +'_'+ $index}}"></a>
+                    <h4>{{stage.stage}} <small> - {{stage.desc}}</small></h4>
+                </div>
+              </div>
+              <div id="collapse{{'Stage_'+$parent.$index +'_'+ $index}}" class="panel-collapse collapse" data-target="#collapse{{'Stage_'+$parent.$index +'_'+ $index}}">
+                <div class="list-group" >
+                  <div class="list-group-item" ng-repeat="field in stage.fields">
+                    <div class = "row">
+                      <div class="col-md-4">{{field.name}}</div>
+                      <div class="col-md-4">{{field.typ}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
