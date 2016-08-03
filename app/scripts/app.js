@@ -24,6 +24,26 @@ angular
         controller: 'MainCtrl',
         controllerAs: 'main'
       })
+      .when('/rules', {
+        templateUrl: 'views/topics.html',
+        controller: 'RulesCtrl',
+        controllerAs: 'rules'
+      })
+      .when('/topics', {
+        templateUrl: 'views/topics.html',
+        controller: 'TopicsCtrl',
+        controllerAs: 'topic'
+      })
+      .when('/types', {
+        templateUrl: 'views/types.html',
+        controller: 'TypesCtrl',
+        controllerAs: 'types'
+      })
+      .when('/connectors', {
+        templateUrl: 'views/connectors.html',
+        controller: 'ConnectorsCtrl',
+        controllerAs: 'connectors'
+      })
       .when('/about', {
         templateUrl: 'views/about.html',
         controller: 'AboutCtrl',

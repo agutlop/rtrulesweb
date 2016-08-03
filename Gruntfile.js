@@ -1,4 +1,4 @@
-// Generated on 2016-07-17 using generator-angular 0.15.1
+// Generated on 2016-07-18 using generator-angular 0.15.1
 'use strict';
 
 // # Globbing
@@ -89,8 +89,11 @@ module.exports = function (grunt) {
                 '/app/styles',
                 connect.static('./app/styles')
               ),
-              connect.static(appConfig.app)
+              connect.static(appConfig.app),
+              // Setup the proxy
+              require('grunt-connect-proxy/lib/utils').proxyRequest
             ];
+
           }
         }
       },
@@ -115,7 +118,15 @@ module.exports = function (grunt) {
           open: true,
           base: '<%= yeoman.dist %>'
         }
-      }
+      },
+      proxies: [
+        {
+          context: '/app', // the context of the data service
+          host: 'localhost', // wherever the data service is running
+          port: 9090, // the port that the data service is running on
+          changeOrigin: true
+        }
+      ]
     },
 
     // Make sure there are no obvious mistakes
@@ -220,7 +231,7 @@ module.exports = function (grunt) {
             }
           }
       }
-    }, 
+    },
 
     // Renames files for browser caching purposes
     filerev: {
@@ -437,6 +448,7 @@ module.exports = function (grunt) {
       'wiredep',
       'concurrent:server',
       'postcss:server',
+      'configureProxies:server',
       'connect:livereload',
       'watch'
     ]);
@@ -480,4 +492,6 @@ module.exports = function (grunt) {
     'test',
     'build'
   ]);
+
+  grunt.loadNpmTasks('grunt-connect-proxy');
 };

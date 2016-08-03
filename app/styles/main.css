@@ -80,4 +80,26 @@ body {
   .jumbotron {
     border-bottom: 0;
   }
+  .panel-heading a:after {
+    font-family:'Glyphicons Halflings';
+    content:"\e080";
+    float: right;
+    color: grey;
+  }
+  .panel-heading a.collapsed:after {
+    content:"\e114";
+  }
+
+  .voffset15 {
+    margin-top: 15px;
+  }
+
+  #stage-panel-body{
+    background-color: whitesmoke;
+  }
+
+  .glyphicon {
+    font-size: 11px;
+  }
+
 }
