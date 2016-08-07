@@ -25,7 +25,7 @@ angular
         controllerAs: 'main'
       })
       .when('/rules', {
-        templateUrl: 'views/topics.html',
+        templateUrl: 'views/rules.html',
         controller: 'RulesCtrl',
         controllerAs: 'rules'
       })
