@@ -2,86 +2,189 @@
   <div class="header" >
     <h1>Rules</h1>
   </div>
-  {{ctrl.newRule}}<br/>
-  {{ctrl.newCond}}<br/>
-  {{ctrl.result}}
-  <form>
-    <div class="form-group">
-      <label for="topic">Topic</label>
-      <select class="form-control" name="topic" id="topic" ng-model="ctrl.newRule.topic">
-        <option value="Topic 1">Topic 1</option>
-        <option value="Topic 2">Topic 2</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="description">Description</label>
-      <input type="text" class="form-control" id="description" placeholder="Rule Description" ng-model="ctrl.newRule.desc">
-    </div>
-    <div class="form-group">
-      <label for="stage">Stage</label>
-      <select class="form-control" name="stage" id="stage" ng-model="ctrl.newRule.stage">
-        <option value="Stage 1">Stage 1</option>
-        <option value="Stage 2">Stage 2</option>
-      </select>
-    </div>
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" ng-model="ctrl.newRule.flag"> Active
-      </label>
-    </div>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Field</th>
-          <th>Field Type</th>
-          <th>Condition</th>
-          <th>Value</th>
-          <th>Add Condition</th>
-        </tr>
-      </thead>
-      <thbody>
-        <tr ng-repeat="fields in ctrl.stageFields">
-          <th scope="row" id="field" ng-model="fields.name" ng-value="fields.name">{{fields.name}}</th>
-          <td id="type" value="String" ng-model="fields.typ">{{fields.typ}}</td>
-          <td>
-            <select class="form-control" name="condition" ng-model="fields.condition">
-              <option ng-repeat="cond in ctrl.fieldConditionsMap[fields.typ].oper" ng-value="cond.cod">{{cond.cod}}</option>
-            </select>
-          </td>
-          <td><input placeholder="Value to compare" ng-model="fields.value" value="''"></td>
-          <td>
-            <button class="btn btn-default" ng-click="ctrl.addCondition(fields.condition, fields.name, fields.value, fields.typ)">
-              <span class="glyphicon glyphicon-plus"></span>
+  <div class="container">
+    <form autocomplete="off">
+      <div class="form-group">
+        <label for="name">Rule Name</label>
+        <input type="text" class="form-control" id="name" placeholder="Rule Name" ng-model="ctrl.newRule.name">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" id="description" placeholder="Rule Description" ng-model="ctrl.newRule.desc">
+      </div>
+      <div class="form-group">
+        <label for="topic">Topic</label>
+        <!--<select class="form-control" name="topic" id="topic" ng-model="ctrl.newRule.topic">-->
+        <select class="form-control" name="topic" id="topic" ng-model="ctrl.topicSelected" ng-options="topic.topic for topic in ctrl.dbTopics" ng-change="ctrl.topicSelection()">
+          <!-- <option ng-repeat="topic in ctrl.dbTopics" value="{{topic.topic}}" ng-click="ctrl.topicSelection(topic.stages)">{{topic.topic}}</option> -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="stage">Stage</label>
+        <select class="form-control" name="stage" id="stage" ng-model="ctrl.stageSelected" ng-options="stage.stage for stage in ctrl.stagesOfTopic" ng-change="ctrl.stageSelection()">
+        </select>
+      </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" ng-model="ctrl.newRule.flag"> Active
+        </label>
+      </div>
+
+      <!-- Dibuja el arbol de condiciones -->
+       <div class="panel panel-group">
+        <div class="panel panel-default">
+          <div class="panel panel-heading">
+            <button type="button" class="btn btn-default" ng-click="ctrl.clearTree()">
+              <span class="glyphicon glyphicon-remove"></span>
             </button>
-          </td>
-        </tr>
-      </thbody>
-    </table>
+            <button type="button" ng-model="ctrl.currentElement"
+                    ng-disabled="(!ctrl.isEmpty(ctrl.newRule.cond) && ctrl.isEmpty(ctrl.currentElement)) || ctrl.currentElement.data.op === 'LEAF'" class="btn btn-default" data-toggle="modal" data-target="#addNode">
+              <span class="glyphicon glyphicon-tree-conifer"></span>
+            </button>
+            <button type="button" ng-model="ctrl.currentElement"
+                    ng-disabled="(!ctrl.isEmpty(ctrl.newRule.cond) && ctrl.isEmpty(ctrl.currentElement)) || ctrl.currentElement.data.op === 'LEAF'" class="btn btn-default" data-toggle="modal" data-target="#addCondition">
+              <span class="glyphicon glyphicon-leaf"></span>
+            </button>
+            <button type="button" ng-model="ctrl.currentElement" class="btn btn-default" ng-disabled="ctrl.isEmpty(ctrl.currentElement) || ctrl.currentElement.parent === null" ng-click="ctrl.removeArrayElement()">
+              <span class="glyphicon glyphicon-scissors"></span>
+            </button>
+          </div>
+          <div class="panel panel-body">
+            <div class="panel panel-default" ng-if="!ctrl.isEmpty(ctrl.newCondArray[0].data)">
+              <div class="panel list-group-item {{ctrl.isCurrentElement(item)}}" ng-repeat="item in ctrl.newCondArray" ng-if="item.data.op !== 'END'" ng-click="ctrl.currentArrayElement(item)">
+                <span ng-if="item.data.op !== 'LEAF'" style="margin-left:{{(item.level-1)*1.5}}em;font-weight: bold;" ng-click="ctrl.currentArrayElement(item)">{{item.data.op}}</span>
+                <span ng-if="item.data.op === 'LEAF'" style="margin-left:{{(item.level-1)*1.5}}em;font-style: italic;" ng-click="ctrl.currentArrayElement(item)">{{ctrl.leafToString(item.data.leaf)}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-footer">
+            <span ng-repeat="exp in ctrl.result track by $index">{{exp}}</span>
+          </div>
+        </div>
+      </div>
 
-    <div class="jumbotron">
-      <span ng-repeat="exp in ctrl.result track by $index">
-        {{exp}}</span>
+      <div class="col-xs-12">
+        <button type="submit" class="btn btn-default" ng-click="ctrl.saveRule($document)">Save</button>
+      </div>
+    </form>
+  </div>
+  <div class="container voffset15">
+    <div id = "alert_placeholder"></div>
+  </div>
+
+  <!-- Las rules ya dadas de alta en la base de datos -->
+  <label for="existing-rules"> Existing Rules</label>
+  <div class="container voffset15" id="existing-rules">
+    <div class="alert alert-warning" ng-if="ctrl.dbRules.length === 0">
+      <strong><span class="glyphicon glyphicon-warning-sign"></span></strong>
+      <span>No se han recuperado Reglas de Base de Datos</span>
     </div>
-
-
-    <script type="text/ng-template"  id="tree_node_item.html">
-      {{data.op}}
-      <button ng-click="ctrl.addItem(data)" ng-show="data.op !== 'LEAF'">Add condition</button>
-      <button ng-click="ctrl.deleteItem(data)">Delete condition</button>
-      <ul>
-        <li ng-repeat="data in data.conns" ng-include="'tree_node_item.html'">
-        </li>
-        <li ng-if="data.op === 'LEAF'">
-          {{data.leaf}}
-        </li>
-      </ul>
-    </script>
-
-    <li ng-init="data = ctrl.json.cond" ng-include="'tree_node_item.html'"></li>
-
-
-    <div class="col-xs-12">
-      <button type="submit" class="btn btn-default">Save</button>
+    <div class="panel panel-group" ng-if="ctrl.dbRules.length > 0">
+      <div class="panel panel-default" ng-repeat="rule in ctrl.dbRules">
+        <div class="panel panel-heading">
+          <a data-toggle="collapse" class="collapsed" data-target="#collapse{{'Rule_'+$index}}"></a>
+          <span style="font-weight: bold;">{{rule.name}}</span>
+          <span style="font-style: italic; margin-left:2em">{{rule.desc}}</span>
+        </div>
+        <div id="collapse{{'Rule_'+$index}}" class="panel-collapse collapse">
+          <div class="panel panel-default" ng-if="!ctrl.isEmpty(ctrl.dbRulesCondition[$index])">
+            <div class="panel list-group-item" ng-repeat="item in ctrl.dbRulesCondition[$index]" ng-if="item.data.op !== 'END'">
+              <span ng-if="item.data.op !== 'LEAF'" style="margin-left:{{(item.level-1)*1.5}}em;font-weight: bold;">{{item.data.op}}</span>
+              <span ng-if="item.data.op === 'LEAF'" style="margin-left:{{(item.level-1)*1.5}}em;font-style: italic;">{{ctrl.leafToString(item.data.leaf)}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-footer">
+          <span ng-repeat="exp in ctrl.result track by $index">{{exp}}</span>
+        </div>
+      </div>
     </div>
-  </form>
+  </div>
+
+  <!-- Modal para insertar una condicion (campor + operador + valor )-->
+  <div id="addCondition" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Add Condition</h4>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th>Field</th>
+              <th>Field Type</th>
+              <th>Condition</th>
+              <th>Value</th>
+              <th>Add Condition</th>
+            </tr>
+            </thead>
+            <thbody>
+              <tr ng-repeat="fields in ctrl.fieldsOfStage">
+                <th scope="row" id="field" ng-model="fields.name" ng-value="fields.name">{{fields.name}}</th>
+                <td id="type" ng-model="fields.typ">{{fields.typ}}</td>
+                <td>
+                  <select class="form-control" name="condition" ng-model="fields.condition">
+                    <option ng-repeat="cond in ctrl.fieldConditionsMap[fields.typ].oper" ng-value="cond.cod">{{cond.cod}}</option>
+                  </select>
+                </td>
+                <td><input placeholder="Value to compare" ng-model="fields.value" value="''"></td>
+                <td>
+                  <button class="btn btn-default" ng-click="ctrl.addArrayCondition(fields.condition, fields.name, fields.value, fields.typ)" data-dismiss="modal">
+                    <span class="glyphicon glyphicon-plus"></span>
+                  </button>
+                </td>
+              </tr>
+            </thbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para insertar un nodo -->
+  <div id="addNode" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Add Node</h4>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th>Connector Code</th>
+              <th>Description</th>
+              <th>Select</th>
+            </tr>
+            </thead>
+            <thbody>
+              <tr ng-repeat="connector in ctrl.dbconnectors">
+                <th scope="row" id="connector" ng-model="connector.tipo" ng-value="connector.tipo">{{connector.tipo}}</th>
+                <td id="conn_desc" ng-model="connector.desc">{{connector.desc}}</td>
+                <td>
+                  <button class="btn btn-default" ng-click="ctrl.addArrayNode(connector.tipo)" data-dismiss="modal">
+                    <span class="glyphicon glyphicon-plus"></span>
+                  </button>
+                </td>
+              </tr>
+            </thbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

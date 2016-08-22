@@ -3,7 +3,7 @@
     <h1>Topics</h1>
   </div>
   <div class="container">
-    <form>
+    <form autocomplete="off">
       <div class="form-group">
         <label for="topic">Topic Name</label>
         <input type="text" class="form-control" ng-model="ctrl.newTopic.topic" id="topic" placeholder="Topic Name">
@@ -36,7 +36,7 @@
               <input type="text" ng-model="field.name" class="form-control" id="name" placeholder="Field Name">
             </div>
             <div class="form-group col-md-4">
-              <select type="text" ng-model="field.typ" class="form-control" id="typ" placeholder="Field Type" ng-value="">
+              <select type="text" ng-model="field.typ" class="form-control" id="typ" ng-value="">
                 <option ng-repeat="fieldtype in ctrl.fieldTypes" ng-value="fieldtype">{{fieldtype}}</option>
                 </select>
             </div>
@@ -52,7 +52,7 @@
         </div>
       </div>
       <div class="col-xs-1">
-        <button type="submit" class="btn btn-default" ng-click="ctrl.saveFieldType($document)">Save</button>
+        <button type="submit" class="btn btn-default" ng-click="ctrl.saveFieldType()">Save</button>
       </div>
     </form>
   </div>
@@ -64,21 +64,27 @@
   <label for="existing-topics"> Existing Topics</label>
   <!-- LISTADO DE DATOS EN BD -->
   <div class="container voffset15" id="existing-topics">
-    <div class="panel-group" id="accordion">
+    <div class="alert alert-warning" ng-if="ctrl.dbTopics.length === 0">
+      <strong><span class="glyphicon glyphicon-warning-sign"></span></strong>
+      <span>No se han recuperado Topics de Base de Datos</span>
+    </div>
+    <div class="panel-group" id="accordion" ng-if="ctrl.dbTopics.length > 0">
       <div class="panel panel-default" ng-repeat="topic in ctrl.dbTopics" id="{{'Topic_'+$index}}">
         <div class="panel-heading">
-          <h4 class="panel-title" ng-model="topic.topic">
+          <h4 class="panel-title">
             <a data-toggle="collapse" class="collapsed" data-target="#collapse{{'Topic_'+$index}}"></a>
-            <h4>{{topic.topic}} <small> - {{ topic.desc }}</small></h4>
+            <span style="font-weight: bold;">{{topic.topic}}</span>
+            <span style="font-style: italic; margin-left:2em">{{ topic.desc }}</span>
           </h4>
         </div>
         <div id="collapse{{'Topic_'+$index}}" class="panel-collapse collapse">
           <div class="panel-body" >
             <div class="panel panel-default" ng-repeat="stage in topic.stages">
               <div class="panel-heading">
-                <div class="panel-title" ng-model="stage.stage">
+                <div class="panel-title">
                   <a data-toggle="collapse" class="collapsed" data-target="#collapse{{'Stage_'+$parent.$index +'_'+ $index}}"></a>
-                    <h4>{{stage.stage}} <small> - {{stage.desc}}</small></h4>
+                  <span style="font-weight: bold;">{{stage.stage}}</span>
+                  <span style="font-style: italic; margin-left:2em">{{ stage.desc }}</span>
                 </div>
               </div>
               <div id="collapse{{'Stage_'+$parent.$index +'_'+ $index}}" class="panel-collapse collapse" data-target="#collapse{{'Stage_'+$parent.$index +'_'+ $index}}">

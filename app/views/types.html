@@ -1,12 +1,12 @@
-<div ng-app="rtruleswebApp" ng-controller="AddFieldTypesController as aftctrl">
+<div ng-app="rtruleswebApp" ng-controller="TypesCtrl as ctrl">
   <div class="header" >
     <h1>Field Types</h1>
   </div>
   <div class="container">
-    <form>
+    <form autocomplete="off">
       <div class="form-group">
         <label for="type">Field Type</label>
-        <input type="text" class="form-control" ng-model="aftctrl.newfield.tipo" id="type" placeholder="Field Type">
+        <input type="text" class="form-control" ng-model="ctrl.newfield.tipo" id="type" placeholder="Field Type">
       </div>
       <div class="col-xs-4">
         <label for="cod">Condition</label>
@@ -17,7 +17,7 @@
       <div class="col-xs-4">
         <label for="but">Remove/Add</label>
       </div>
-      <div ng-repeat="field in aftctrl.newfield.oper" class="row">
+      <div ng-repeat="field in ctrl.newfield.oper" class="row">
         <div class="form-group col-md-4">
           <input type="text" ng-model="field.cod" class="form-control" id="cod" placeholder="Condition">
         </div>
@@ -25,12 +25,12 @@
           <input type="text" ng-model="field.desc" class="form-control" id="desc" placeholder="Description">
         </div>
         <div class="form-group col-md-4" id="but">
-          <button class="btn btn-default" ng-show="$last && !$first" ng-click="aftctrl.removeCond()" ><span class="glyphicon glyphicon-minus"></span></button>
-          <button class="btn btn-default" ng-show="$last" ng-click="aftctrl.addCond()"><span class="glyphicon glyphicon-plus"></span></button>
+          <button class="btn btn-default" ng-show="$last && !$first" ng-click="ctrl.removeCond()" ><span class="glyphicon glyphicon-minus"></span></button>
+          <button class="btn btn-default" ng-show="$last" ng-click="ctrl.addCond()"><span class="glyphicon glyphicon-plus"></span></button>
         </div>
       </div>
       <div class="col-xs-1">
-        <button type="submit" class="btn btn-default" ng-click="aftctrl.saveFieldType($document)">Save</button>
+        <button type="submit" class="btn btn-default" ng-click="ctrl.saveFieldType($document)">Save</button>
       </div>
     </form>
   </div>
@@ -41,11 +41,15 @@
 
   <label for="existing-types"> Existing Field Types</label>
   <!-- LISTADO DE DATOS EN BD -->
-  <div class="container voffset15" id="existing-types">
-    <div class="panel-group" id="accordion">
-      <div class="panel panel-default" ng-repeat="field in aftctrl.dbfields" id="{{field.tipo}}">
+  <div class="container voffset15" id="existing-types" >
+    <div class="alert alert-warning" ng-if="ctrl.dbfields.length === 0">
+      <strong><span class="glyphicon glyphicon-warning-sign"></span></strong>
+      <span>No se han recuperado Field Types de Base de Datos</span>
+    </div>
+    <div class="panel-group" id="accordion" ng-if="ctrl.dbfields.length > 0">
+      <div class="panel panel-default" ng-repeat="field in ctrl.dbfields" id="{{field.tipo}}">
         <div class="panel-heading">
-          <h4 class="panel-title" ng-model="field.tipo">
+          <h4 class="panel-title">
             <a data-toggle="collapse" class="collapsed" data-target="#collapse{{field.tipo}}"></a>
             {{field.tipo}}
           </h4>

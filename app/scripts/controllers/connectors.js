@@ -54,7 +54,7 @@ angular.module('rtruleswebApp')
       //combrobamos que ya no exista
       if(valid){
         vm.dbconnectors.forEach(function (dbconn) {
-          if(valid && (dbconn.tipo === vm.newconnector.topic || dbconn.desc === vm.newconnector.desc)){
+          if(valid && (dbconn.tipo === vm.newconnector.tipo || dbconn.desc === vm.newconnector.desc)){
             valid = false;
             lastError = 'ERROR: Ya existe un connector con este mismo nombre o tag';
           }
