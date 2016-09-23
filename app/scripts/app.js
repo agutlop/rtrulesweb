@@ -20,8 +20,8 @@ angular
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl',
+        templateUrl: 'views/results.html',
+        controller: 'ResultsCtrl',
         controllerAs: 'main'
       })
       .when('/rules', {

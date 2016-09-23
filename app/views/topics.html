@@ -74,11 +74,12 @@
           <h4 class="panel-title">
             <a data-toggle="collapse" class="collapsed" data-target="#collapse{{'Topic_'+$index}}"></a>
             <span style="font-weight: bold;">{{topic.topic}}</span>
-            <span style="font-style: italic; margin-left:2em">{{ topic.desc }}</span>
+            <!--<span style="font-style: italic; margin-left:2em">{{ topic.desc }}</span>-->
           </h4>
         </div>
         <div id="collapse{{'Topic_'+$index}}" class="panel-collapse collapse">
           <div class="panel-body" >
+            <span style="font-style: italic;">{{ topic.desc }}</span><p/>
             <div class="panel panel-default" ng-repeat="stage in topic.stages">
               <div class="panel-heading">
                 <div class="panel-title">

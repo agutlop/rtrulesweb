@@ -63,6 +63,39 @@
         </div>
       </div>
 
+      <div class="form-group">
+        <label for="action">Action</label>
+        <!--<select class="form-control" name="topic" id="topic" ng-model="ctrl.newRule.topic">-->
+        <select class="form-control" name="action" id="action" ng-model="ctrl.newRule.action" ng-change="ctrl.clearActionFields()">
+          <option value="MESSAGE">Save full message</option>
+          <option value="FIELDS">Save some fields</option>
+          <option value="LITERALS">Save Literal</option>
+        </select>
+      </div>
+
+      <div class="form-group" ng-if="ctrl.newRule.action==='FIELDS'">
+        <div class="col-xs-6">
+          <label for="act_field">Field</label>
+        </div>
+        <div class="col-xs-4">
+          <label for="but">Remove/Add</label>
+        </div>
+        <div ng-repeat="act_field in ctrl.newRule.actionFields" class="row">
+          <div class="form-group col-xs-6">
+            <select class="form-control" id="act_field" ng-model="ctrl.newRule.actionFields[$index]" ng-change="ctrl.quitarActionFieldRepetidos()">
+              <option ng-repeat="fld in ctrl.fieldsOfStage" ng-value="fld.name">{{fld.name}}</option>
+            </select>
+          </div>
+          <div class="form-group col-xs-4" id="but">
+            <button class="btn btn-default" ng-show="$last && !$first" ng-click="ctrl.removeActionField()" ><span class="glyphicon glyphicon-minus"></span></button>
+            <button class="btn btn-default" ng-show="$last" ng-click="ctrl.addActionField()"><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group" ng-if="ctrl.newRule.action==='LITERALS'">
+        <label for="lit">Literal</label>
+        <input type="text" class="form-control" id="lit" placeholder="Literal a guardar" ng-model="ctrl.newRule.actionFields[0]">
+      </div>
       <div class="col-xs-12">
         <button type="submit" class="btn btn-default" ng-click="ctrl.saveRule($document)">Save</button>
       </div>
@@ -80,22 +113,61 @@
       <span>No se han recuperado Reglas de Base de Datos</span>
     </div>
     <div class="panel panel-group" ng-if="ctrl.dbRules.length > 0">
-      <div class="panel panel-default" ng-repeat="rule in ctrl.dbRules">
-        <div class="panel panel-heading">
-          <a data-toggle="collapse" class="collapsed" data-target="#collapse{{'Rule_'+$index}}"></a>
-          <span style="font-weight: bold;">{{rule.name}}</span>
-          <span style="font-style: italic; margin-left:2em">{{rule.desc}}</span>
+      <div class="panel panel-default">
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Stage</th>
+          <th>Active</th>
+          <th>User</th>
+          <th>Condition Tree</th>
+        </tr>
+        </thead>
+        <thbody>
+          <tr ng-repeat="rule in ctrl.dbRules">
+            <th scope="row" id="rule_name" ng-model="rule.name" ng-value="rule.name">{{rule.name}}</th>
+            <td id="rule_desc" ng-model="rule.desc">{{rule.desc}}</td>
+            <td id="rule_stage" ng-model="rule.stage">{{rule.stage}}</td>
+            <td id="rule_active" ng-model="rule.flag"><input type="checkbox" ng-model="rule.flag" disabled></td>
+            <td id="rule_user" ng-model="rule.user">{{rule.user}}</td>
+            <td>
+              <button class="btn btn-default" data-toggle="modal" data-target="#showTree" ng-click="ctrl.indexModalShowTree=$index;">
+                <span class="glyphicon glyphicon-plus"></span>
+              </button>
+            </td>
+          </tr>
+        </thbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Modal para mostrar un arbol de condiciones -->
+  <div id="showTree" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Condition Tree</h4>
         </div>
-        <div id="collapse{{'Rule_'+$index}}" class="panel-collapse collapse">
-          <div class="panel panel-default" ng-if="!ctrl.isEmpty(ctrl.dbRulesCondition[$index])">
-            <div class="panel list-group-item" ng-repeat="item in ctrl.dbRulesCondition[$index]" ng-if="item.data.op !== 'END'">
+        <div class="modal-body">
+          <div class="panel panel-group">
+          <div class="panel panel-default" ng-if="!ctrl.isEmpty(ctrl.dbRulesCondition[ctrl.indexModalShowTree])">
+            <div class="panel list-group-item" ng-repeat="item in ctrl.dbRulesCondition[ctrl.indexModalShowTree]" ng-if="item.data.op !== 'END'">
               <span ng-if="item.data.op !== 'LEAF'" style="margin-left:{{(item.level-1)*1.5}}em;font-weight: bold;">{{item.data.op}}</span>
               <span ng-if="item.data.op === 'LEAF'" style="margin-left:{{(item.level-1)*1.5}}em;font-style: italic;">{{ctrl.leafToString(item.data.leaf)}}</span>
             </div>
           </div>
+          </div>
         </div>
-        <div class="panel panel-footer">
-          <span ng-repeat="exp in ctrl.result track by $index">{{exp}}</span>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -103,7 +175,7 @@
 
   <!-- Modal para insertar una condicion (campor + operador + valor )-->
   <div id="addCondition" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
 
       <!-- Modal content-->
       <div class="modal-content">

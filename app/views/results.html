@@ -1,0 +1,26 @@
+<div ng-controller="ResultsCtrl as ctrl">
+  <div class="form-group">
+    <label for="topic">Topic</label>
+    <!--<select class="form-control" name="topic" id="topic" ng-model="ctrl.newRule.topic">-->
+    <select class="form-control" name="topic" id="topic" ng-model="ctrl.selectedTopic" ng-options="topic.topic for topic in ctrl.dbTopics">
+    </select>
+  </div>
+  <div class="container" ng-if="ctrl.selectedTopic.topic==='topic-wordapp'" model="ctrl.selectedTopic">
+    <iframe src="http://localhost:5601/goto/62143a30065b035f1603d53c8e268137"  height="230" width="800" style="border:0"></iframe>
+    <iframe src="http://localhost:5601/goto/47880a2fc7dc28d5a579ead276834f84" height="560" width="800" style="border:0"></iframe>
+    <iframe src="http://localhost:5601/goto/144a211148a6d3a809159ce59ef40a30" height="560" width="800" style="border:0"></iframe>
+    <iframe src="http://localhost:5601/goto/d848ceefc181fe49a58d2eeaa88f6616" height="560" width="800" style="border:0"></iframe>
+  </div>
+  <div class="container" ng-if="ctrl.selectedTopic.topic==='topic-wordcountapp'" model="ctrl.selectedTopic">
+    <iframe src="http://localhost:5601/goto/ce7018facd38a2c7c3b136ceb6d8ed2c"  height="230" width="800" style="border:0"></iframe>
+    <iframe src="http://localhost:5601/goto/f33dd9553e08023fcf29d744cbb73cd4" height="560" width="800" style="border:0"></iframe>
+    <iframe src="http://localhost:5601/goto/5de3b31e5520e7e26f2e2fc62dd115f4" height="560" width="800" style="border:0"></iframe>
+    <iframe src="http://localhost:5601/goto/f3eb99ebc72b436d5b067a5d532b47f0" height="560" width="800" style="border:0"></iframe>
+  </div>
+  <div class="container" ng-if="ctrl.selectedTopic.topic==='topic-meetuprsvp'" model="ctrl.selectedTopic">
+    <iframe src="http://localhost:5601/goto/ce2d60f7929d188400711494d38c0bd0"  height="230" width="800" style="border:0"></iframe>
+    <iframe src="http://localhost:5601/goto/646ac26edaa9743f4abf79d52d1970f6" height="560" width="800" style="border:0"></iframe>
+    <iframe src="http://localhost:5601/goto/c9a4f11f25191effda0bdcfc8b1be975" height="560" width="800" style="border:0"></iframe>
+    <iframe src="http://localhost:5601/goto/f51b6edeb5b9bfb789bb6f7eb9d9f2ec" height="560" width="800" style="border:0"></iframe>
+  </div>
+</div>

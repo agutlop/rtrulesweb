@@ -54,8 +54,10 @@ angular.module('rtruleswebApp')
       'desc' : '',
       'stage' : '',
       'flag' : true,
-      'user' : 'default user',
-      'cond' : {}
+      'user' : 'default_user',
+      'cond' : {},
+      'action': '',
+      'actionFields':[""]
     };
 
     //condiciones en formato de array
@@ -65,6 +67,9 @@ angular.module('rtruleswebApp')
     /////para mostrar la regla en formato texto
     vm.result = [];
 
+
+    //indice de la regla a mostrar el arbol de condiciones en un modal
+    vm.indexModalShowTree=0;
     vm.jsonToArrayText = function() {
       vm.result = [];
       vm.recursive(vm.newRule.cond);
@@ -106,7 +111,9 @@ angular.module('rtruleswebApp')
         'stage' : '',
         'flag' : true,
         'user' : 'default user',
-        'cond' : {}
+        'cond' : {},
+        'action': '',
+        'actionFields':[""]
       };
 
     };
@@ -308,6 +315,39 @@ angular.module('rtruleswebApp')
         valid = false;
         lastError = 'ERROR: Arbol de condiciones incorrecto. Todos los nodos deben tener al menos una condicion';
       }
+      //validamos la accion
+      if(valid && (vm.newRule.action !== 'FIELDS' && vm.newRule.action !== 'MESSAGE' && vm.newRule.action !== 'LITERALS')){
+        valid = false;
+        lastError = 'ERROR: La acción de la regla no es correcta';
+      }
+      //validamos la accion
+      if(valid){
+        if(vm.newRule.action === 'FIELDS') {
+          if (vm.newRule.actionFields.length === 0)
+          {
+            valid = false;
+            lastError = 'ERROR: Es necesario indicar algun campo a guardar en la accion';
+          }
+          else {
+            var ind;
+            for (ind in vm.newRule.actionFields) {
+              if (vm.newRule.actionFields[ind] === "") {
+                valid = false;
+                lastError = 'ERROR: Algun campo indicado para guardar esta vacio';
+              }
+            }
+          }
+        }
+        else if (vm.newRule.action === 'LITERALS')
+        {
+          if(vm.newRule.actionFields.length === 0 || vm.newRule.actionFields[0] === ""){
+            valid = false;
+            lastError = 'ERROR: Es necesario indicar el literal a guardar';
+          }
+        }
+
+
+      }
 
       if(!valid){
         vm.showError(lastError);
@@ -351,12 +391,65 @@ angular.module('rtruleswebApp')
       return true;
     };
 
+    //inserta un elemento en actionFields de la nueva regla
+    vm.addActionField = function(){
+      if(vm.newRule.actionFields[vm.newRule.actionFields.length - 1] !== "") {
+        vm.newRule.actionFields.push("");
+      }
+    };
+
+    vm.removeActionField = function(){
+      vm.newRule.actionFields.pop();
+    };
+
+    vm.clearActionFields = function () {
+      vm.newRule.actionFields = [""];
+    };
+
+    vm.actionToString = function (index) {
+      if(vm.dbRules[index].action === "MESSAGE")
+      {
+        return "Save complete message";
+      }
+      else if(vm.dbRules[index].action === "LITERALS")
+      {
+        return "Save literal: " + vm.dbRules[index].actionFields[0];
+      }
+      else if(vm.dbRules[index].action === "FIELDS")
+      {
+        return "Save fields: " + vm.dbRules[index].actionFields;
+      }
+    };
+
+    vm.quitarActionFieldRepetidos = function() {
+      var last = vm.newRule.actionFields[vm.newRule.actionFields.length-1];
+      var count = 0;
+      var ind;
+      for(ind in vm.newRule.actionFields)
+      {
+        if(last === vm.newRule.actionFields[ind]){
+          count = count +1 ;
+        }
+      }
+      if(count > 1){
+        vm.newRule.actionFields.pop();
+        vm.newRule.actionFields.push("");
+      }
+
+    };
+
+
+
     //vuelve a recuperar las reglas almacenadas
     vm.refreshRules = function(){
       $http.get("/app/rules")
         .then(function(response) {
-         // console.log(response.data);
+          console.log(response.data);
           vm.dbRules = response.data;
+          //guardamos las condiciones en formato array para cada regla
+          vm.dbRules.forEach(function (rule, index) {
+            vm.dbRulesCondition[index] = vm.jsonToArray(rule.cond);
+          });
         });
     };
 
@@ -369,7 +462,7 @@ angular.module('rtruleswebApp')
         //guardamos las condiciones en formato array para cada regla
         vm.dbRules.forEach(function (rule, index) {
           vm.dbRulesCondition[index] = vm.jsonToArray(rule.cond);
-        })
+        });
       });
 
 
@@ -386,9 +479,6 @@ angular.module('rtruleswebApp')
           vm.fieldConditionsMap[field.tipo] = field;
         });
       });
-
-
-
 
 
 
