@@ -251,9 +251,32 @@ angular.module('rtruleswebApp')
       vm.currentElement = {};
     };
 
+    //formateo de fecha
+    vm.validarFecha = function (fecha) {
+        var RegExPattern = /^(((0[1-9]|[12]\d|3[01])[\/\.-](0[13578]|1[02])[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|((0[1-9]|[12]\d|30)[\/\.-](0[13456789]|1[012])[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|((0[1-9]|1\d|2[0-8])[\/\.-](02)[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|((29)[\/\.-](02)[\/\.-]((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))$/g;
+        //var RegExPattern = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;
+        if ((fecha.match(RegExPattern)) && (fecha!='')) {
+          return true;
+        } else {
+          return false;
+        }
+    };
+
     //añade una nueva hoja al arbol de condiciones newCond
     vm.addArrayCondition = function(operador, field, value, tipo){
       console.log('-->' + operador + ' ' + field + ' ' + value + ' ' + tipo);
+
+
+      if(vm.isEmpty(operador) || vm.isEmpty(field) || vm.isEmpty(value) || vm.isEmpty(tipo))
+      {
+        vm.showError("La condicion es incorrecta. Algun campo esta vacio");
+        return;
+      }
+      if(tipo === "Date" && !vm.validarFecha(value))
+      {
+        vm.showError("El formato de la fecha es incorrecta. Formato: dd/mm/yyyy");
+        return;
+      }
 
       var newLeaf = {
         'op' : 'LEAF',
