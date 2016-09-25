@@ -203,7 +203,10 @@
                     <option ng-repeat="cond in ctrl.fieldConditionsMap[fields.typ].oper" ng-value="cond.cod">{{cond.cod}}</option>
                   </select>
                 </td>
-                <td><input placeholder="Value to compare" ng-model="fields.value" value="''"></td>
+                <td>
+                  <input type="text" class="form-control"  placeholder="Value to compare" ng-model="fields.value" value="''" ng-if="fields.typ!=='Date'">
+                  <input type="text" class="form-control" placeholder="dd/mm/yyyy hh:mm:ss" ng-model="fields.value" value="''" ng-if="fields.typ==='Date'">
+                </td>
                 <td>
                   <button class="btn btn-default" ng-click="ctrl.addArrayCondition(fields.condition, fields.name, fields.value, fields.typ)" data-dismiss="modal">
                     <span class="glyphicon glyphicon-plus"></span>
